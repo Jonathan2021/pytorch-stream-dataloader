@@ -77,10 +77,8 @@ class StreamDataLoader(object):
 
         # Empty remaining cache
         # Assert no value is a true value
-        print('cache: ', cache)
-        """
         for fifo in cache:
-            if not len(cache):
+            if not len(fifo):
                 continue
             while len(fifo):
                 item = fifo.pop()[0]
@@ -88,4 +86,3 @@ class StreamDataLoader(object):
                     print("Item that threw error")
                     print(item)
                     assert 0, 'code is broken, cache contained real data'
-        """
