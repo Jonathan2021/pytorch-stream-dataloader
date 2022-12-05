@@ -80,7 +80,8 @@ class StreamDataset(IterableDataset):
         split_size = split_sizes[worker_id]
 
         if len(self.stream_list) < split_size:
-            print('worker#', worker_id, ': Stopping... Number of streams < split_size')
+            print('worker#', worker_id, f": Stopping... Number of streams ({len(self.stream_list)}) < split_size ({split_size})")
+            print(f"All split sizes are {split_sizes} for a batch size of {self.batch_size}")
             raise StopIteration
 
         """

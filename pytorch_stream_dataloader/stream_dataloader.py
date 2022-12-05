@@ -38,7 +38,7 @@ class StreamDataLoader(object):
         padding_mode (str): "data" or "zeros", what to do when all streams have been read but you still but one thread of streaming needs to output something
         padded_value (object): object or None
     """
-    def __init__(self, files, iterator_fun, batch_size, num_workers, collate_fn, padding_mode, padding_value=None):
+    def __init__(self, files, iterator_fun, batch_size, num_workers, collate_fn, padding_mode, padding_value=None, values_are_diff= (lambda x,y : x != y)):
         mutex = multiprocessing.Lock()
         pos = multiprocessing.Value('i', 0)
         num_actives = multiprocessing.Value('i', 0)
@@ -54,6 +54,7 @@ class StreamDataLoader(object):
             drop_last=False)
         self.collate_fn = collate_fn
         self.num_workers = max(1, num_workers)
+        self.values_are_diff = values_are_diff
 
     def __iter__(self):
         self.dataloader.dataset.shuffle()
@@ -77,5 +78,7 @@ class StreamDataLoader(object):
                 continue
             while len(fifo):
                 item = fifo.pop()[0]
-                if item != self.dataset.padding_value:
+                if self.dataset.padding_mode == "zeros" and self.values_are_diff(item, self.dataset.padding_value): # If mode is data then it will most likely be different
+                    print("Item that threw error")
+                    print(item)
                     assert 0, 'code is broken, cache contained real data'
