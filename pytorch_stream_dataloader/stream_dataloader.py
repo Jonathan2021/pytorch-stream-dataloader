@@ -69,7 +69,8 @@ class StreamDataLoader(object):
                 batch = chain.from_iterable(iter(batch))
                 # Check if batch is all padding_value, do not yield
                 batch = [item for item in batch]
-                all_pad = all([item == self.dataset.padding_value for item in batch])
+                all_pad = all([not self.values_are_diff(item, self.dataset.padding_value) for item in batch]) if self.dataset.padding_mode == "zeros" else False
+
                 if all_pad:
                     continue
                 batch = self.collate_fn(batch)
